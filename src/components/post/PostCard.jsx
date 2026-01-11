@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import InteractionBar from "./InteractionBar";
-import { NavLink } from "react-router";
+import { useNavigate } from "react-router";
 
 export default function PostCard({ post, onLike }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -24,12 +25,11 @@ export default function PostCard({ post, onLike }) {
     if (imageCount === 1) {
       return (
         <div className="mt-3 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800">
-          <img 
+                      <img 
             src={post.images[0]} 
             alt="Post media" 
             className="w-full max-h-96 object-cover cursor-pointer hover:opacity-95 transition"
             onClick={(e) => {
-              e.preventDefault();
               e.stopPropagation();
               window.open(post.images[0], '_blank');
             }}
@@ -48,7 +48,6 @@ export default function PostCard({ post, onLike }) {
               alt={`Media ${idx + 1}`}
               className="w-full h-64 object-cover cursor-pointer hover:opacity-95 transition"
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 window.open(img, '_blank');
               }}
@@ -66,7 +65,6 @@ export default function PostCard({ post, onLike }) {
             alt="Media 1"
             className="w-full h-full object-cover cursor-pointer hover:opacity-95 transition"
             onClick={(e) => {
-              e.preventDefault();
               e.stopPropagation();
               window.open(post.images[0], '_blank');
             }}
@@ -79,7 +77,6 @@ export default function PostCard({ post, onLike }) {
                 alt={`Media ${idx + 2}`}
                 className="w-full h-full object-cover cursor-pointer hover:opacity-95 transition"
                 onClick={(e) => {
-                  e.preventDefault();
                   e.stopPropagation();
                   window.open(img, '_blank');
                 }}
@@ -99,7 +96,6 @@ export default function PostCard({ post, onLike }) {
               alt={`Media ${idx + 1}`}
               className="w-full h-48 object-cover cursor-pointer hover:opacity-95 transition"
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 window.open(img, '_blank');
               }}
@@ -108,7 +104,6 @@ export default function PostCard({ post, onLike }) {
               <div 
                 className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center cursor-pointer"
                 onClick={(e) => {
-                  e.preventDefault();
                   e.stopPropagation();
                   window.open(img, '_blank');
                 }}
@@ -155,7 +150,6 @@ export default function PostCard({ post, onLike }) {
           alt="media" 
           className="w-full rounded-md max-h-80 object-cover cursor-pointer hover:opacity-95 transition"
           onClick={(e) => {
-            e.preventDefault();
             e.stopPropagation();
             window.open(post.media[0], '_blank');
           }}
@@ -168,6 +162,21 @@ export default function PostCard({ post, onLike }) {
     if (onLike) await onLike(postId, newIsLiked);
   };
 
+  const handleCardClick = (e) => {
+    // Không navigate nếu click vào các element tương tác
+    const target = e.target;
+    const isInteractive = 
+      target.closest('button') ||
+      target.closest('a') ||
+      target.closest('audio') ||
+      target.closest('[data-no-navigate]') ||
+      target.tagName === 'IMG';
+    
+    if (!isInteractive) {
+      navigate(`/post/${post.id}`);
+    }
+  };
+
   const menuItems = [
     { label: "Lưu bài viết"},
     { label: "Giao diện", hasSub: true},
@@ -175,8 +184,10 @@ export default function PostCard({ post, onLike }) {
   ];
 
   return (
-    <NavLink to={`/post/${post.id}`} className="block">
-      <article className="bg-white dark:bg-[#1c1e21] px-[24px] py-[16px] shadow-sm border-b border-l border-r border-gray-200 dark:border-gray-700 overflow-visible relative">
+    <article 
+      className="bg-white dark:bg-[#1c1e21] px-[24px] py-[16px] shadow-sm border-b border-l border-r border-gray-200 dark:border-gray-700 overflow-visible relative cursor-pointer"
+      onClick={handleCardClick}
+    >
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <img
@@ -202,7 +213,6 @@ export default function PostCard({ post, onLike }) {
               <div className="relative" ref={menuRef}>
                 <button 
                   onClick={(e) => {
-                    e.preventDefault();
                     e.stopPropagation();
                     setIsMenuOpen(!isMenuOpen);
                   }}
@@ -225,10 +235,7 @@ export default function PostCard({ post, onLike }) {
                     <div
                       className="absolute right-0 mt-2 w-30 bg-white dark:bg-[#242526] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-10 overflow-hidden"
                       style={{ animation: 'menuEnter 150ms ease-out forwards' }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className="py-1">
                         {menuItems.map((item, index) => (
@@ -236,7 +243,6 @@ export default function PostCard({ post, onLike }) {
                             key={index}
                             className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#3a3b3c] transition-colors"
                             onClick={(e) => {
-                              e.preventDefault();
                               e.stopPropagation();
                               setIsMenuOpen(false);
                               if (item.fn) item.fn();
@@ -261,10 +267,7 @@ export default function PostCard({ post, onLike }) {
             {renderAudio()}
             {renderLegacyMedia()}
 
-            <div onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}>
+            <div data-no-navigate>
               <InteractionBar 
                 stats={post.stats}
                 isLiked={post.isLiked}
@@ -275,6 +278,5 @@ export default function PostCard({ post, onLike }) {
           </div>
         </div>
       </article>
-    </NavLink>
   );
 }

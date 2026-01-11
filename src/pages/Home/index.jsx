@@ -3,7 +3,11 @@ import PostCard from "@/components/post/PostCard";
 import WhatAreYouThinking from "@/components/post/WhatAreYouThinking";
 import FeedHeader from "@/components/FeedHeader";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchPosts, toggleLike, resetPosts } from "@/components/post/postsSlice";
+import {
+  fetchPosts,
+  toggleLike,
+  resetPosts,
+} from "@/components/post/postsSlice";
 
 function transformPosts(apiPosts = []) {
   return apiPosts.map((p) => {
@@ -81,94 +85,44 @@ export default function Home() {
   // ✅ TRANSFORM POSTS TRƯỚC KHI SỬ DỤNG
   const posts = transformPosts(items?.data || []);
 
-  // Debug: Log Redux state - THROTTLE để tránh spam
-  useEffect(() => {
-    console.log("📊 Redux State Changed:", { 
-      currentPage: currentPage, 
-      currentPageType: typeof currentPage,
-      hasMore, 
-      status, 
-      postsCount: items?.data?.length,
-      firstPostId: items?.data?.[0]?.id,
-      lastPostId: items?.data?.[items.data?.length - 1]?.id
-    });
-  }, [currentPage, hasMore, status, items?.data?.length]); // ✅ Chỉ log khi các giá trị này thay đổi
-
   // ✅ Reset và load initial posts - CHỈ CHẠY 1 LẦN khi mount
   useEffect(() => {
-    console.log("🔄 Component mounted - Resetting and loading initial posts");
     dispatch(resetPosts());
     dispatch(fetchPosts({ page: 1, maxId: null }));
-    
-    // Cleanup function
-    return () => {
-      console.log("🧹 Component unmounting");
-    };
   }, []); // ✅ EMPTY DEPS - chỉ chạy 1 lần khi mount
 
   // ✅ Callback để load thêm posts
   const loadMorePosts = useCallback(() => {
-    if (status === "loading") {
-      console.log("⚠️ Already loading, skip");
-      return;
-    }
-    
-    if (!hasMore) {
-      console.log("⚠️ No more posts, skip");
+    if (status === "loading" || !hasMore) {
       return;
     }
 
-    const currentPageNum = Number(currentPage) || 0;
+    const currentPageNum = currentPage.page || 0;
+
     const nextPage = currentPageNum + 1;
-    
-    console.log(`🔄 loadMorePosts triggered:`, {
-      currentPage,
-      currentPageNum,
-      nextPage,
-      hasMore,
-      status
-    });
-    
+
     if (isNaN(nextPage) || nextPage < 1) {
-      console.error("❌ Invalid nextPage:", nextPage);
       return;
     }
-    
+
     const lastPostId = items?.data?.[items.data.length - 1]?.id;
-    console.log(`📤 Dispatching fetchPosts for page ${nextPage}, lastPostId: ${lastPostId}`);
-    
+
     dispatch(fetchPosts({ page: nextPage, maxId: lastPostId }));
   }, [dispatch, status, hasMore, currentPage, items]);
 
   // ✅ Setup Intersection Observer manually
   useEffect(() => {
-    console.log("🔧 Observer useEffect triggered:", {
-      hasMore,
-      status,
-      hasSentinel: !!sentinelRef.current,
-      currentPage,
-      postsCount: items?.data?.length // ✅ Sử dụng items.data.length
-    });
-
     // Cleanup previous observer
     if (observerRef.current) {
-      console.log("🧹 Disconnecting previous observer");
       observerRef.current.disconnect();
     }
 
     // Don't observe if no more posts or no sentinel
-    if (!hasMore) {
-      console.log("⚠️ Not setting up observer: hasMore is false");
+    if (!hasMore || !sentinelRef.current) {
       return;
     }
 
-    if (!sentinelRef.current) {
-      console.log("⚠️ Not setting up observer: sentinel ref is null");
-      return;
-    }
-
-    console.log("👁️ Setting up NEW Intersection Observer");
-
+    // Setup new observer
     const options = {
       root: null,
       rootMargin: "300px",
@@ -177,33 +131,15 @@ export default function Home() {
 
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
-      console.log("👁️ Observer callback triggered:", {
-        isIntersecting: entry.isIntersecting,
-        intersectionRatio: entry.intersectionRatio,
-        hasMore,
-        status,
-        currentPage
-      });
 
       if (entry.isIntersecting && hasMore && status !== "loading") {
-        console.log("✅ Conditions met - Calling loadMorePosts");
         loadMorePosts();
-      } else {
-        console.log("⏸️ Skipping load:", {
-          isIntersecting: entry.isIntersecting,
-          hasMore,
-          status,
-          reason: !entry.isIntersecting ? "not intersecting" : 
-                  !hasMore ? "no more posts" : 
-                  status === "loading" ? "already loading" : "unknown"
-        });
       }
     }, options);
 
     observer.observe(sentinelRef.current);
     observerRef.current = observer;
-
-    console.log("✅ Observer setup complete");
+    // End setup new observer
 
     return () => {
       if (observerRef.current) {
@@ -261,11 +197,11 @@ export default function Home() {
 
         {/* Sentinel element - ✅ Luôn hiển thị khi có posts, hide bằng CSS nếu !hasMore */}
         {posts.length > 0 && hasMore && (
-          <div 
-            ref={sentinelRef} 
+          <div
+            ref={sentinelRef}
             className="py-8 text-center min-h-[150px]"
-            style={{ 
-              background: 'transparent',
+            style={{
+              background: "transparent",
             }}
           >
             {status === "loading" ? (
@@ -277,7 +213,9 @@ export default function Home() {
               </div>
             ) : (
               <div>
-                <p className="text-gray-600 text-sm mb-3">Scroll to load more...</p>
+                <p className="text-gray-600 text-sm mb-3">
+                  Scroll to load more...
+                </p>
                 {/* ✅ DEBUG: Manual load button */}
                 <button
                   onClick={() => {

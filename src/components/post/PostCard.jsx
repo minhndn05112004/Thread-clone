@@ -162,8 +162,7 @@ export default function PostCard({ post, onLike }) {
     if (onLike) await onLike(postId, newIsLiked);
   };
 
-  const handleCardClick = (e) => {
-    // Không navigate nếu click vào các element tương tác
+const handleCardClick = (e) => {
     const target = e.target;
     const isInteractive = 
       target.closest('button') ||
@@ -173,7 +172,13 @@ export default function PostCard({ post, onLike }) {
       target.tagName === 'IMG';
     
     if (!isInteractive) {
-      navigate(`/post/${post.id}`);
+      // Kiểm tra user trong localStorage
+      const user = localStorage.getItem('user');
+      if (user) {
+        navigate(`/post/${post.id}`);
+      } else {
+        navigate('/login');
+      }
     }
   };
 

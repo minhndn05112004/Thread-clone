@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script>
+      // Redirect về index.html, giữ lại path trong sessionStorage
+      sessionStorage.redirect = location.href;
+      window.location.replace(
+        location.origin + '/Thread-clone/'
+      );
+    </script>
+  </head>
+  <body></body>
+</html>

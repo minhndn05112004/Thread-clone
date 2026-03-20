@@ -9,28 +9,21 @@ export default function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
   
-  const logout = async () => {
+const logout = async () => {
     try {
-      // Gọi API logout
       await authService.LogOut();
-      
-      // Clear local storage
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
       setIsMenuOpen(false);
-      
-      // Redirect to login
-      window.location.href = "/";
     } catch (err) {
       console.error("Logout error:", err);
-      
-      // Fallback: Force logout locally even if API fails
-      // Vì có thể token đã hết hạn (401) nhưng vẫn cần logout phía client
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
-      window.location.href = "/";
+    } finally {
+      // Dùng base URL của GitHub Pages
+      window.location.href = window.location.origin + import.meta.env.BASE_URL;
     }
   };
   

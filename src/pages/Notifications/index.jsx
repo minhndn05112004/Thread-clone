@@ -6,25 +6,9 @@ function notifications() {
     user: "myn_lih",
     time: "2 tuần",
     avatar: "https://i.pravatar.cc/150?img=1", // Ảnh đại diện mẫu
-    content: "ai ai bày cái trò này để t trêu ảnh v",
+    content: "hello world",
     stats: { likes: 170, comments: 6, reposts: 17, shares: 33 }
   },
-  {
-    id: 2,
-    user: "rophimtv",
-    time: "3 tuần",
-    avatar: "https://i.pravatar.cc/150?img=2",
-    content: "Chainsaw Man bản đẹp đã lên sóng nha tụi e",
-    stats: { likes: 483, comments: 15, reposts: 17, shares: 21 }
-  },
-  {
-    id: 3,
-    user: "hina.cuti_",
-    time: "4 tuần",
-    avatar: "https://i.pravatar.cc/150?img=3",
-    content: "Kiếm bạn đi chơi cùng xong về block nhe :)))",
-    stats: { likes: 162, comments: 45, reposts: 1, shares: 1 }
-  }
 ];
 
 // --- CÁC SVG ICON COMPONENTS (Nhúng trực tiếp để không cần cài thư viện) ---
@@ -69,7 +53,7 @@ const ThreadPost = ({ post, isLast }) => (
       </div>
       
       {/* Nội dung bài viết - màu trắng ngà */}
-      <p className="text-[15px] leading-snug text-[#F3F5F7] mb-3 font-light">{post.content}</p>
+      <p className="text-[15px] leading-snug text-[#F3F5F7] mb-3 font-normal">{post.content}</p>
 
       {/* Footer: Các icon tương tác */}
       {/* Sử dụng màu text-[#777777] cho các icon chưa active */}
@@ -94,22 +78,21 @@ const ThreadPost = ({ post, isLast }) => (
     </div>
   </div>
 );
-  return (
+return (
     <div className="flex flex-col">
       <FeedHeader title="Notifications" />
-      <div className="p-4 bg-white dark:bg-[#1c1e21] border border-gray-200 dark:border-gray-700 rounded-tl-[20px] rounded-br-[20px] rounded-tr-[20px] rounded-bl-[20px]">
-<div className="min-h-screen flex justify-center font-sans antialiased">
-      {/* Container chính mô phỏng cái khung trong ảnh của bạn */}
-      <div className="w-full max-w-[620px] rounded-xl overflow-hidden">
-        {MOCK_DATA.map((post, index) => (
-          <ThreadPost 
-            key={post.id} 
-            post={post} 
-            isLast={index === MOCK_DATA.length - 1} // Kiểm tra bài cuối để bỏ viền dưới
-          />
-        ))}
-      </div>
-    </div>
+      <div className="p-4 bg-white dark:bg-[#1c1e21] border border-gray-200 dark:border-gray-700 rounded-[20px]">
+        <div className="flex justify-center font-bold antialiased">
+          <div className="w-full max-w-[620px] rounded-xl overflow-hidden">
+            {MOCK_DATA.map((post, index) => (
+              <ThreadPost 
+                key={post.id} 
+                post={post} 
+                isLast={index === MOCK_DATA.length - 1}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

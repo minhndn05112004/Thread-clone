@@ -46,28 +46,12 @@ function search() {
 const SuggestionList = () => {
   const suggestions = [
     {
-      username: "hawkinsavclubvn",
-      displayName: "From Hawkins AV Club to Hellfire",
-      bio: "viết lại kịch bản Stranger Things",
+      username: "user1",
+      displayName: "abc",
+      bio: "hello world",
       followers: "818",
       isVerified: false,
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=stranger"
-    },
-    {
-      username: "mens_outfit_04",
-      displayName: "Mens | Fashion | Outfit",
-      bio: "• Daily men's fashion & outfit ideas\n• men's fashion | lifestyle | tips & guides\n• Follow for the best outfit ideas...",
-      followers: "24,4K",
-      isVerified: false,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=fashion"
-    },
-    {
-      username: "_daiphatthanh",
-      displayName: "Đài Phát Thanh.",
-      bio: "Đài Phát Thanh. trên Threads",
-      followers: "93,8K",
-      isVerified: true,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=radio"
     }
   ];
   return (
